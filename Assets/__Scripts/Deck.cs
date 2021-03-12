@@ -179,8 +179,11 @@ public class Deck : MonoBehaviour {
 				tGO = Instantiate(prefabSprite) as GameObject;
 				tSR = tGO.GetComponent<SpriteRenderer>();
 				if (deco.type == "suit") {
+					tGO = Instantiate(prefabSprite) as GameObject;
+					
 					tSR.sprite = dictSuits[card.suit];
 				} else { // it is a rank
+					
 					tS = rankSprites[card.rank];
 					tSR.sprite = tS;
 					tSR.color = card.color;
