@@ -102,9 +102,52 @@ public class Prospector : MonoBehaviour
             // CardProspectors in the tableau have the state CardState.tableau
             tableau.Add(cp); // Add this CardProspector to the List<> tableau
         }
+
+        foreach(CardProspector tCP in tableau)
+        {
+            foreach(int hid in tCP.slotDef.hiddenBy)
+            {
+                cp = FindCardByLayoutID(hid);
+                tCP.hiddenBy.Add(cp);
+            }
+        }
         MoveToTarget(Draw());
         UpdateDrawPile();
     }
+
+    CardProspector FindCardByLayoutID(int layoutID)
+    {
+        foreach (CardProspector tCP in tableau)
+        {
+            // Search through all cards in the tableau List<>
+            if (tCP.layoutID == layoutID)
+            {
+                // If the card has the same ID, return it
+                return (tCP);
+            }
+        }
+        // If it's not found, return null
+        return (null);
+    }
+
+    void SetTableauFaces()
+    {
+        foreach (CardProspector cd in tableau)
+        {
+            bool fup = true; // Assume the card will be face-up
+            foreach (CardProspector cover in cd.hiddenBy)
+            {
+                // If either of the covering cards are in the tableau
+                if (cover.state == CardState.tableau)
+                {
+                    fup = false; // then this card is face-down
+                }
+            }
+            cd.faceUp = fup; // Set the value on the card
+        }
+    }
+
+
     public void CardClicked(CardProspector cd)
     {
         // The reaction is determined by the state of the clicked card
