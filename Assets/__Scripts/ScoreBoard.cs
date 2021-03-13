@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScoreBoard : MonoBehaviour
+public class Scoreboard : MonoBehaviour
 {
-    public static Scoreboard S; // The singleton for Scoreboard 
+   public static Scoreboard S; // The singleton for Scoreboard 
 
     [Header("Set in Inspector")]
     public GameObject prefabFloatingScore;
