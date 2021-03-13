@@ -23,6 +23,7 @@ public class Deck : MonoBehaviour {
 	// Prefabs
 	public GameObject prefabSprite;
 	public GameObject prefabCard;
+	public GameObject prefabGoldCard;
 
 	[Header("Set Dynamically")]
 
@@ -155,9 +156,17 @@ public class Deck : MonoBehaviour {
 		Sprite tS = null;
 		GameObject tGO = null;
 		SpriteRenderer tSR = null;  // so tempted to make a D&D ref here...
-		
+		GameObject cgo;
 		for (int i=0; i<cardNames.Count; i++) {
-			GameObject cgo = Instantiate(prefabCard) as GameObject;
+			bool goldCard = Random.value > .9;
+			if (goldCard)
+			{
+				cgo = Instantiate(prefabGoldCard) as GameObject;
+			}
+            else
+            {
+				cgo = Instantiate(prefabCard) as GameObject;
+			}
 			cgo.transform.parent = deckAnchor;
 			Card card = cgo.GetComponent<Card>();
 			
@@ -176,6 +185,7 @@ public class Deck : MonoBehaviour {
 			
 			// Add Decorators
 			foreach (Decorator deco in decorators) {
+             
 				tGO = Instantiate(prefabSprite) as GameObject;
 				tSR = tGO.GetComponent<SpriteRenderer>();
 				if (deco.type == "suit") {
@@ -202,7 +212,7 @@ public class Deck : MonoBehaviour {
 				}
 				
 				tGO.name = deco.type;
-				
+		
 				card.decoGOs.Add (tGO);
 			} // foreach Deco
 			
@@ -243,14 +253,21 @@ public class Deck : MonoBehaviour {
 
 			tGO = Instantiate(prefabSprite) as GameObject;
 			tSR = tGO.GetComponent<SpriteRenderer>();
-			tSR.sprite = cardBack;
+			if (goldCard)
+			{
+				tSR.sprite = cardBackGold;
+			}
+			else
+			{
+				tSR.sprite = cardBack;
+			}
 			tGO.transform.SetParent(card.transform);
 			tGO.transform.localPosition=Vector3.zero;
 			tSR.sortingOrder = 2;
 			tGO.name = "back";
 			card.back = tGO;
 			card.faceUp = false;
-			
+			card.tag = "golden";
 			cards.Add (card);
 		} // for all the Cardnames	
 	} // makeCards
@@ -274,10 +291,12 @@ public class Deck : MonoBehaviour {
 
 	 	while (oCards.Count > 0) 
 	 	{
-	 		// find a random card, add it to shuffled list and remove from original deck
-	 		ndx = Random.Range(0,oCards.Count);
-	 		tCards.Add(oCards[ndx]);
-	 		oCards.RemoveAt(ndx);
+			
+				// find a random card, add it to shuffled list and remove from original deck
+				ndx = Random.Range(0, oCards.Count);
+				tCards.Add(oCards[ndx]);
+				oCards.RemoveAt(ndx);
+			
 	 	}
 
 	 	oCards = tCards;
