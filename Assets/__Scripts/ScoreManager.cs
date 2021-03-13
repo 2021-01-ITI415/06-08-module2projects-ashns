@@ -75,7 +75,7 @@ public class ScoreManager : MonoBehaviour
 
             case eScoreEvent.mineGold:
                 chain++;
-                scoreRun += (chain*2);
+                scoreRun += chain;
                 break;
         }
 
