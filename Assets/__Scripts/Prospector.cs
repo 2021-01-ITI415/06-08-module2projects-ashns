@@ -34,15 +34,10 @@ public class Prospector : MonoBehaviour
 
     void Start()
     {
+       // Scoreboard.S.score = ScoreManager.SCORE;
         deck = GetComponent<Deck>();
         deck.InitDeck(deckXML.text);
         Deck.Shuffle(ref deck.cards);
-
-        //Card c;
-        //for (int cNum = 0; cNum < deck.cards.Count; cNum++){
-        //	c = deck.cards[cNum];
-        //	c.transform.localPosition = new Vector3((cNum % 13)*3, cNum / 13 * 4, 0);
-        //}
         layout = GetComponent<Layout>();
         layout.ReadLayout(layoutXML.text);
 
@@ -156,13 +151,15 @@ public class Prospector : MonoBehaviour
             case CardState.target:
                 // Clicking the target card does nothing
                 break;
+
             case CardState.drawpile:
                 // Clicking any card in the drawPile will draw the next card
                 MoveToDiscard(target); // Moves the target to the discardPile
                 MoveToTarget(Draw());  // Moves the next drawn card to the target
                 UpdateDrawPile();      // Restacks the drawPile
-             
+                ScoreManager.EVENT(eScoreEvent.draw);
                 break;
+
             case CardState.tableau:
                 // Clicking a card in the tableau will check if it's a valid play
                 bool validMatch = true;
@@ -180,12 +177,59 @@ public class Prospector : MonoBehaviour
                                          // Yay! It's a valid card.
                 tableau.Remove(cd);
                 MoveToTarget(cd);// Remove it from the tableau List
-         
-            
+                SetTableauFaces();
+                ScoreManager.EVENT(eScoreEvent.mine);
+
                 break;
         }
-
+        CheckForGameOver();
     
+    }
+
+    void CheckForGameOver()
+    {
+        // If the tableau is empty, the game is over
+        if (tableau.Count == 0)
+        {
+            // Call GameOver() with a win
+            GameOver(true);
+            return;
+        }
+        // If there are still cards in the draw pile, the game's not over
+        if (drawPile.Count > 0)
+        {
+            return;
+        }
+        // Check for remaining valid plays
+        foreach (CardProspector cd in tableau)
+        {
+            if (AdjacentRank(cd, target))
+            {
+                // If there is a valid play, the game's not over
+                return;
+            }
+        }
+        // Since there are no valid plays, the game is over
+        // Call GameOver with a loss
+        GameOver(false);
+    }
+    // Called when the game is over. Simple for now, but expandable
+    void GameOver(bool won)
+    {
+        if (won)
+        {
+           ScoreManager.EVENT(eScoreEvent.gameWin);      // This replaces the old line
+        }
+        else
+        {
+           ScoreManager.EVENT(eScoreEvent.gameLoss);     // This replaces the old line
+                                                   // Reload the scene, resetting the game
+
+        }
+        // Reload the scene in reloadDelay seconds
+        // This will give the score a moment to travel
+       // Invoke("ReloadLevel", reloadDelay);
+        SceneManager.LoadScene("__Prospector_Scene_0");
     }
 
     public bool AdjacentRank(CardProspector c0, CardProspector c1)
