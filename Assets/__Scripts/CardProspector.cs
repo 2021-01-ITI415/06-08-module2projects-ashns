@@ -20,6 +20,7 @@ public class CardProspector : Card
     public int layoutID;
     // The SlotDef class stores information pulled in from the LayoutXML <slot>
     public SlotDef slotDef;
+    public bool isGold = false;
 
     override public void OnMouseUpAsButton()
     {

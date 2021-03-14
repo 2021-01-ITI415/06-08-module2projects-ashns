@@ -95,7 +95,12 @@ public class Prospector : MonoBehaviour
         foreach (Card tCD in lCD)
         {
             tCP = tCD as CardProspector;
+           
             lCP.Add(tCP);
+            if (tCD.isGoldCard)
+            {
+                tCP.isGoldCard = true;
+            }
         }
         return (lCP);
     }
@@ -224,8 +229,16 @@ public class Prospector : MonoBehaviour
                 tableau.Remove(cd);
                 MoveToTarget(cd);// Remove it from the tableau List
                 SetTableauFaces();
-                ScoreManager.EVENT(eScoreEvent.mine);
-                FloatingScoreHandler(eScoreEvent.mine);
+                if (cd.isGoldCard)
+                {
+                    ScoreManager.EVENT(eScoreEvent.mineGold);
+                    FloatingScoreHandler(eScoreEvent.mine);
+                }
+                else
+                {
+                    ScoreManager.EVENT(eScoreEvent.mine);
+                    FloatingScoreHandler(eScoreEvent.mine);
+                }
 
                 break;
         }

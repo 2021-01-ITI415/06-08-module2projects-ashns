@@ -267,7 +267,8 @@ public class Deck : MonoBehaviour {
 			tGO.name = "back";
 			card.back = tGO;
 			card.faceUp = false;
-			card.tag = "golden";
+			
+			card.isGoldCard = goldCard;
 			cards.Add (card);
 		} // for all the Cardnames	
 	} // makeCards
