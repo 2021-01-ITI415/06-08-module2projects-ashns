@@ -158,6 +158,8 @@ public class Prospector : MonoBehaviour
         }
         MoveToTarget(Draw());
         UpdateDrawPile();
+       
+        
     }
 
     CardProspector FindCardByLayoutID(int layoutID)
@@ -177,7 +179,7 @@ public class Prospector : MonoBehaviour
 
     void SetTableauFaces()
     {
-        foreach (CardProspector cd in tableau)
+        /* foreach (CardProspector cd in tableau)
         {
             bool fup = true; // Assume the card will be face-up
             foreach (CardProspector cover in cd.hiddenBy)
@@ -189,7 +191,7 @@ public class Prospector : MonoBehaviour
                 }
             }
             cd.faceUp = fup; // Set the value on the card
-        }
+        } */
     }
 
 
@@ -199,7 +201,14 @@ public class Prospector : MonoBehaviour
         switch (cd.state)
         {
             case CardState.target:
-                // Clicking the target card does nothing
+                if (target.rank == 13)
+                {
+                    MoveToDiscard(target); // Moves the target to the discardPile
+                    MoveToTarget(Draw());  // Moves the next drawn card to the target
+                    UpdateDrawPile();
+                    ScoreManager.EVENT(eScoreEvent.mine);
+                    FloatingScoreHandler(eScoreEvent.mine);
+                }
                 break;
 
             case CardState.drawpile:
@@ -209,6 +218,14 @@ public class Prospector : MonoBehaviour
                 UpdateDrawPile();      // Restacks the drawPile
                 ScoreManager.EVENT(eScoreEvent.draw);
                 FloatingScoreHandler(eScoreEvent.draw);
+                /* (cd.rank == 13)
+                {
+                    MoveToDiscard(target); // Moves the target to the discardPile
+                    MoveToTarget(Draw());  // Moves the next drawn card to the target
+                    UpdateDrawPile();
+                    ScoreManager.EVENT(eScoreEvent.drawKing);
+                    FloatingScoreHandler(eScoreEvent.drawKing);
+                }*/
                 break;
 
             case CardState.tableau:
@@ -219,7 +236,26 @@ public class Prospector : MonoBehaviour
                     // If the card is face-down, it's not valid
                     validMatch = false;
                 }
-                if(!AdjacentRank(cd, target))
+          
+                foreach(CardProspector cover in cd.hiddenBy)
+                {
+
+                    // If either of the covering cards are in the tableau
+                    if (cover.state == CardState.tableau)
+                    {
+                        validMatch = false;
+                        break;// then this card is face-down
+                    }
+                    
+                }
+                if (cd.rank == 13 && validMatch == true)
+                {
+                    MoveToDiscard(cd);
+                    ScoreManager.EVENT(eScoreEvent.mine);
+                    FloatingScoreHandler(eScoreEvent.mine);// Moves the target to the discardPile
+                    break;                                 // Moves the next drawn card to the targe
+                }
+                if (!AdjacentRank(cd, target))
                 {
                     validMatch = false;
                 }
@@ -227,8 +263,13 @@ public class Prospector : MonoBehaviour
                 if (!validMatch) return; // return if not valid
                                          // Yay! It's a valid card.
                 tableau.Remove(cd);
-                MoveToTarget(cd);// Remove it from the tableau List
+                // Remove it from the tableau List
                 SetTableauFaces();
+                MoveToDiscard(cd);
+                MoveToDiscard(target);// Moves the target to the discardPile
+                MoveToTarget(Draw());  // Moves the next drawn card to the target
+                UpdateDrawPile();      // Restacks the drawPile
+                
                 if (cd.isGoldCard)
                 {
                     ScoreManager.EVENT(eScoreEvent.mineGold);
@@ -320,14 +361,14 @@ public class Prospector : MonoBehaviour
         // If either card is face-down, it's not adjacent.
         if (!c0.faceUp || !c1.faceUp) return (false);
         // If they are 1 apart, they are adjacent
-        if (Mathf.Abs(c0.rank - c1.rank) == 1)
+        if (Mathf.Abs(c0.rank + c1.rank) == 13)
         {
             return (true);
         }
         // If one is A and the other King, they're adjacent
-        if (c0.rank == 1 && c1.rank == 13) return (true);
+       // if (c0.rank == 1 && c1.rank == 13) return (true);
 
-        if (c0.rank == 13 && c1.rank == 1) return (true);
+       // if (c0.rank == 13 && c1.rank == 1) return (true);
         // Otherwise, return false
         return (false);
     }

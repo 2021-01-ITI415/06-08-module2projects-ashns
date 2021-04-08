@@ -343,6 +343,9 @@ MonoBehaviour:
   - Row1
   - Row2
   - Row3
+  - Row4
+  - Row5
+  - Row6
   - Discard
   - Draw
 --- !u!20 &827460512
@@ -396,7 +399,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 827460508}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -40}
+  m_LocalPosition: {x: 0, y: 0, z: -60}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

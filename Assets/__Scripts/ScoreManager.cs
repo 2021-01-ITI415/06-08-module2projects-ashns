@@ -4,6 +4,7 @@ using UnityEngine;
 public enum eScoreEvent
 {
     draw,
+    drawKing,
     mine,
     mineGold,
     gameWin,
@@ -60,7 +61,10 @@ public class ScoreManager : MonoBehaviour
         switch (evt)
         {
             // Same things need to happen whether it's a draw, a win, or a loss 
-            case eScoreEvent.draw:     // Drawing a card 
+            case eScoreEvent.draw:
+            case eScoreEvent.drawKing:
+                scoreRun = 5;
+                break;// Drawing a card 
             case eScoreEvent.gameWin:  // Won the round 
             case eScoreEvent.gameLoss: // Lost the round 
                 chain = 0;             // resets the score chain 
@@ -70,7 +74,8 @@ public class ScoreManager : MonoBehaviour
 
             case eScoreEvent.mine:    // Remove a mine card 
                 chain++;              // increase the score chain 
-                scoreRun += chain;    // add score for this card to run 
+                scoreRun = 10;  
+                // add score for this card to run 
                 break;
 
             case eScoreEvent.mineGold:

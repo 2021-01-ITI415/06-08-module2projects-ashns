@@ -158,7 +158,7 @@ public class Deck : MonoBehaviour {
 		SpriteRenderer tSR = null;  // so tempted to make a D&D ref here...
 		GameObject cgo;
 		for (int i=0; i<cardNames.Count; i++) {
-			bool goldCard = Random.value > .9;
+			bool goldCard = false;
 			if (goldCard)
 			{
 				cgo = Instantiate(prefabGoldCard) as GameObject;
