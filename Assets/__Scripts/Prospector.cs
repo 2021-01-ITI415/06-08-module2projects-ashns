@@ -107,9 +107,14 @@ public class Prospector : MonoBehaviour
     
     CardProspector Draw()
     {
+        if (drawPile[0] == null)
+        {
+            return null;
+        }
         CardProspector cd = drawPile[0]; // Pull the 0th CardProspector
         drawPile.RemoveAt(0);            // Then remove it from List<> drawPile
-        return (cd);                      // And return it
+        return (cd);
+        // And return it
     }
 
 
@@ -253,7 +258,8 @@ public class Prospector : MonoBehaviour
                     MoveToDiscard(cd);
                     ScoreManager.EVENT(eScoreEvent.mine);
                     FloatingScoreHandler(eScoreEvent.mine);// Moves the target to the discardPile
-                    break;                                 // Moves the next drawn card to the targe
+                    CheckForGameOver();
+                    return;
                 }
                 if (!AdjacentRank(cd, target))
                 {
@@ -267,8 +273,18 @@ public class Prospector : MonoBehaviour
                 SetTableauFaces();
                 MoveToDiscard(cd);
                 MoveToDiscard(target);// Moves the target to the discardPile
-                MoveToTarget(Draw());  // Moves the next drawn card to the target
-                UpdateDrawPile();      // Restacks the drawPile
+                if (drawPile.Count > 0) {
+                    MoveToTarget(Draw());  // Moves the next drawn card to the target
+                    UpdateDrawPile();
+                }
+                else
+                {
+                    ScoreManager.EVENT(eScoreEvent.mine);
+                    FloatingScoreHandler(eScoreEvent.mine);
+                    target.faceUp = false;
+                    GameOver(false);
+                    
+                }
                 
                 if (cd.isGoldCard)
                 {
@@ -283,6 +299,7 @@ public class Prospector : MonoBehaviour
 
                 break;
         }
+        
         CheckForGameOver();
     
     }
@@ -297,18 +314,40 @@ public class Prospector : MonoBehaviour
             return;
         }
         // If there are still cards in the draw pile, the game's not over
-        if (drawPile.Count > 0)
+        if (drawPile.Count==0 && target.rank == 13)
         {
             return;
         }
+        if (drawPile.Count > 0)
+        {
+           
+            return;
+        }
         // Check for remaining valid plays
+        bool covered = false;
         foreach (CardProspector cd in tableau)
         {
-            if (AdjacentRank(cd, target))
+            if (AdjacentRank(cd, target) || cd.rank == 13)
             {
                 // If there is a valid play, the game's not over
-                return;
+                foreach (CardProspector cover in cd.hiddenBy)
+                {
+
+                    // If either of the covering cards are in the tableau
+                    if (cover.state == CardState.tableau)
+                    {
+
+                        covered = true;
+                    }
+
+                }
+                if (covered == false)
+                {
+                    return;
+                }
+
             }
+      
         }
         // Since there are no valid plays, the game is over
         // Call GameOver with a loss
@@ -361,7 +400,7 @@ public class Prospector : MonoBehaviour
         // If either card is face-down, it's not adjacent.
         if (!c0.faceUp || !c1.faceUp) return (false);
         // If they are 1 apart, they are adjacent
-        if (Mathf.Abs(c0.rank + c1.rank) == 13)
+        if ((c0.rank + c1.rank) == 13)
         {
             return (true);
         }

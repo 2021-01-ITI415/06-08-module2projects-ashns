@@ -62,9 +62,6 @@ public class ScoreManager : MonoBehaviour
         {
             // Same things need to happen whether it's a draw, a win, or a loss 
             case eScoreEvent.draw:
-            case eScoreEvent.drawKing:
-                scoreRun = 5;
-                break;// Drawing a card 
             case eScoreEvent.gameWin:  // Won the round 
             case eScoreEvent.gameLoss: // Lost the round 
                 chain = 0;             // resets the score chain 
@@ -72,16 +69,13 @@ public class ScoreManager : MonoBehaviour
                 scoreRun = 0;          // reset scoreRun 
                 break;
 
-            case eScoreEvent.mine:    // Remove a mine card 
-                chain = 10; ;              // increase the score chain 
+            case eScoreEvent.mine: 
+                // Remove a mine card 
+                chain = 10;              // increase the score chain 
                 scoreRun += chain;  
                 // add score for this card to run 
                 break;
 
-            case eScoreEvent.mineGold:
-                chain = chain * 2;
-                scoreRun += chain;
-                break;
         }
 
         // This second switch statement handles round wins and losses 
